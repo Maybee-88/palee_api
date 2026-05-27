@@ -71,6 +71,8 @@ engine = create_engine(
     DATABASE_URL,
     echo=False,
     connect_args=_build_connect_args(),
+    pool_pre_ping=True,
+    pool_recycle=3600,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

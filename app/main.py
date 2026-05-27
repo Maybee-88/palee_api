@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from app.configs.database import engine, Base, test_connection
 from app.configs.exceptions import BaseAPIException, api_exception_handler
+
 from app.routers import auth
 from app.routers import (
     province,

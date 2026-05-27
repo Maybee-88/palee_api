@@ -120,8 +120,8 @@ def _validate_registration_details(db: Session, student_id: str, details: list, 
         raise ValidationException("ລາຍລະອຽດການລົງທະບຽນບໍ່ໄດ້ຖືກສະຫນອງ")
     
     # Maximum 3 subjects per request
-    if len(details) > 3:
-        raise ValidationException("ນັກຮຽນສາມາດລົງທະບຽນໄດ້ສູງສຸດ 3 ວິຊາຕໍ່ຄັ້ງ")
+    # if len(details) > 3:
+    #     raise ValidationException("ນັກຮຽນສາມາດລົງທະບຽນໄດ້ສູງສຸດ 3 ວິຊາຕໍ່ຄັ້ງ")
     
     fee_ids = [d.fee_id for d in details]
     if len(fee_ids) != len(set(fee_ids)):
@@ -161,8 +161,8 @@ def _validate_registration_details(db: Session, student_id: str, details: list, 
     ).count()
     
     # Maximum 3 subjects total per academic year
-    if current_count + len(fee_ids) > 3:
-        raise ValidationException(f"ນັກຮຽນສາມາດລົງທະບຽນໄດ້ສູງສຸດ 3 ວິຊາຕໍ່ສົກຮຽນ")
+    # if current_count + len(fee_ids) > 3:
+    #     raise ValidationException(f"ນັກຮຽນສາມາດລົງທະບຽນໄດ້ສູງສຸດ 3 ວິຊາຕໍ່ສົກຮຽນ")
     
     return request_academic_id
 
