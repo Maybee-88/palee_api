@@ -544,7 +544,13 @@
               <td>{{ item.level_name }}</td>
               <td>{{ item.fee }}</td>
             </tr>
-            {% endfor %} {% if show_other_fee %}
+            {% endfor %} {% if show_other_fee_items %} {% for item in other_fee_items %}
+            <tr>
+              <td>{{ item.label }}</td>
+              <td>-</td>
+              <td>{{ item.amount }}</td>
+            </tr>
+            {% endfor %} {% elif show_other_fee %}
             <tr>
               <td>{{ other_fee_label }}</td>
               <td>-</td>
@@ -662,7 +668,13 @@
               <td>{{ item.level_name }}</td>
               <td>{{ item.fee }}</td>
             </tr>
-            {% endfor %} {% if show_other_fee %}
+            {% endfor %} {% if show_other_fee_items %} {% for item in other_fee_items %}
+            <tr>
+              <td>{{ item.label }}</td>
+              <td>-</td>
+              <td>{{ item.amount }}</td>
+            </tr>
+            {% endfor %} {% elif show_other_fee %}
             <tr>
               <td>{{ other_fee_label }}</td>
               <td>-</td>
