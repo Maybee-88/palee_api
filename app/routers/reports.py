@@ -445,6 +445,28 @@ def popular_subject_level_detail_report_pdf(
     )
 
 
+@router.get("/registrations")
+def get_registration_report(
+    status: Optional[str] = Query(None, description="ສະຖານະ: 'ຈ່າຍແລ້ວ' | 'ຍັງບໍ່ທັນຈ່າຍ' | 'ຈ່າຍບາງສ່ວນ' (optional)"),
+    subject_id: Optional[str] = Query(None, description="ລະຫັດວິຊາ (optional)"),
+    level_id: Optional[str] = Query(None, description="ລະຫັດລະດັບ/ຊັ້ນຮຽນ (optional)"),
+    db: Session = Depends(get_db),
+):
+    result = svc.get_registration_report(db, status=status, subject_id=subject_id, level_id=level_id)
+    return success_response(result, "ດຶງຂໍ້ມູນລາຍງານການລົງທະບຽນສຳເລັດ")
+
+
+@router.get("/registrations/export")
+def export_registration_report(
+    status: Optional[str] = Query(None, description="ສະຖານະ (optional)"),
+    subject_id: Optional[str] = Query(None, description="ລະຫັດວິຊາ (optional)"),
+    level_id: Optional[str] = Query(None, description="ລະຫັດລະດັບ/ຊັ້ນຮຽນ (optional)"),
+    db: Session = Depends(get_db),
+):
+    result = svc.export_registration_report(db, status=status, subject_id=subject_id, level_id=level_id)
+    return success_response(result, "Export ຂໍ້ມູນສຳເລັດ")
+
+
 @router.get("/donations/export")
 def export_donation_report(
     donor_id: Optional[str] = Query(None, description="ລະຫັດຜູ້ບໍລິຈາກ (optional)"),
