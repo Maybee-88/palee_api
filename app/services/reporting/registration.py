@@ -240,5 +240,5 @@ def export_registration_report(
         filters_desc.append(level_name)
     filter_str = "_".join(filters_desc) if filters_desc else "ທັງໝົດ"
 
-    filename = f"ລາຍງານລົງທະບຽນ_{filter_str}.xlsx"
+    filename = f"ລາຍຊື່ນັກຮຽນ_{filter_str}.xlsx"
     return finalize_workbook_export(workbook, filename=filename, total_records=len(registrations))
