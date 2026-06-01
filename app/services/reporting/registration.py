@@ -234,13 +234,11 @@ def export_registration_report(
     )
 
     filters_desc = []
-    if subject_id:
-        filters_desc.append(f"subject_{subject_id}")
-    if level_id:
-        filters_desc.append(f"level_{level_id}")
-    if status:
-        filters_desc.append(f"status_{status}")
-    filter_str = "_".join(filters_desc) if filters_desc else "all"
+    if subject_name:
+        filters_desc.append(subject_name)
+    if level_name:
+        filters_desc.append(level_name)
+    filter_str = "_".join(filters_desc) if filters_desc else "ທັງໝົດ"
 
-    filename = f"registration_report_{filter_str}_{current_timestamp()}.xlsx"
+    filename = f"ລາຍງານລົງທະບຽນ_{filter_str}.xlsx"
     return finalize_workbook_export(workbook, filename=filename, total_records=len(registrations))
