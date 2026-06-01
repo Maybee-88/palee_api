@@ -15,6 +15,7 @@ from app.services.pdf.contexts.popular_subjects_report import (
     build_popular_subjects_report_context,
 )
 from app.services.pdf.contexts.registration import build_registration_context
+from app.services.pdf.contexts.registration_report import build_registration_report_context
 from app.services.pdf.contexts.salary_payment import build_salary_payment_context
 from app.services.pdf.contexts.student_report import build_student_report_context
 from app.services.pdf.contexts.teacher_attendance_report import (
@@ -85,6 +86,32 @@ def build_salary_payment_receipt_pdf(data: SalaryPaymentReceiptRequest) -> bytes
         html,
         viewport_width=874,
         viewport_height=1240,
+    )
+
+
+def build_registration_report_pdf(report_data: dict) -> bytes:
+    html = render_template(
+        "registration_report.html",
+        build_registration_report_context(report_data),
+    )
+    footer_template = """
+        <div style="width:100%;padding:0 14mm 2mm 14mm;font-size:9px;
+          color:#6b7280;font-family:'Noto Sans Lao','Segoe UI',sans-serif;
+          display:flex;justify-content:space-between;align-items:center;
+          border-top:1px solid #e5e7eb;box-sizing:border-box;">
+          <span>ລາຍງານການລົງທະບຽນ</span>
+          <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
+        </div>
+    """
+    return render_pdf_document(
+        html,
+        viewport_width=1754,
+        viewport_height=1240,
+        margin_top="0mm",
+        margin_right="0mm",
+        margin_bottom="14mm",
+        margin_left="0mm",
+        footer_template=footer_template,
     )
 
 

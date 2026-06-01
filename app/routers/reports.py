@@ -456,6 +456,24 @@ def get_registration_report(
     return success_response(result, "ດຶງຂໍ້ມູນລາຍງານການລົງທະບຽນສຳເລັດ")
 
 
+@router.get("/registrations/report-pdf")
+def registration_report_pdf(
+    status: Optional[str] = Query(None),
+    subject_id: Optional[str] = Query(None),
+    level_id: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+):
+    report_data = svc.get_registration_report(
+        db, status=status, subject_id=subject_id, level_id=level_id
+    )
+    pdf_bytes = receipt_pdf_svc.build_registration_report_pdf(report_data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="registration_report.pdf"'},
+    )
+
+
 @router.get("/registrations/export")
 def export_registration_report(
     status: Optional[str] = Query(None, description="ສະຖານະ (optional)"),
