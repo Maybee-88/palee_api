@@ -1,8 +1,8 @@
+import multiprocessing
 import os
 import subprocess
 import sys
-
-from playwright.sync_api import sync_playwright
+from concurrent.futures import ProcessPoolExecutor
 
 from app.services.pdf.assets import BROWSER_DIR, PROJECT_ROOT
 
@@ -50,18 +50,28 @@ def resolve_chromium_executable() -> str | None:
     return _find_browser_binary()
 
 
-def render_pdf_document(
+def _render_in_subprocess(
     html: str,
-    *,
     viewport_width: int,
     viewport_height: int,
-    margin_top: str = "0mm",
-    margin_right: str = "0mm",
-    margin_bottom: str = "0mm",
-    margin_left: str = "0mm",
-    header_template: str | None = None,
-    footer_template: str | None = None,
+    margin_top: str,
+    margin_right: str,
+    margin_bottom: str,
+    margin_left: str,
+    header_template: str | None,
+    footer_template: str | None,
 ) -> bytes:
+    """Run sync Playwright in a fresh process.
+
+    The synchronous Playwright API spawns the browser as a child process.
+    When that happens inside uvicorn's threadpool worker (which runs under an
+    active uvloop event loop), the subprocess launch fails on Linux with
+    ``BlockingIOError: [Errno 11] Resource temporarily unavailable``. Running
+    the render in a separate process gives Playwright a clean, loop-free
+    context so the browser can start normally.
+    """
+    from playwright.sync_api import sync_playwright
+
     chromium_executable = resolve_chromium_executable()
 
     with sync_playwright() as playwright:
@@ -101,3 +111,35 @@ def render_pdf_document(
             return page.pdf(**pdf_options)
         finally:
             browser.close()
+
+
+def render_pdf_document(
+    html: str,
+    *,
+    viewport_width: int,
+    viewport_height: int,
+    margin_top: str = "0mm",
+    margin_right: str = "0mm",
+    margin_bottom: str = "0mm",
+    margin_left: str = "0mm",
+    header_template: str | None = None,
+    footer_template: str | None = None,
+) -> bytes:
+    # A single-worker pool per call keeps the browser render fully isolated
+    # from the server's event loop and tears the process down afterwards.
+    # "spawn" guarantees the child does not inherit uvicorn's uvloop state.
+    spawn_context = multiprocessing.get_context("spawn")
+    with ProcessPoolExecutor(max_workers=1, mp_context=spawn_context) as executor:
+        future = executor.submit(
+            _render_in_subprocess,
+            html,
+            viewport_width,
+            viewport_height,
+            margin_top,
+            margin_right,
+            margin_bottom,
+            margin_left,
+            header_template,
+            footer_template,
+        )
+        return future.result()
